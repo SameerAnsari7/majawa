@@ -20,21 +20,52 @@ export function ContactPage({ lang }: ContactPageProps) {
   const [errorMsg, setErrorMsg] = useState('');
   const [receiptId, setReceiptId] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.websiteUrl) return; // Honeypot spam protection
     setErrorMsg('');
     setSubmitting(true);
+
     try {
-      const res = await fetch('/api/contact', {
+      // 1. Save to local/Render backend store (if active)
+      let refId = `MAJ-CON-${Date.now().toString().slice(-5)}`;
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { referenceId?: string };
+          if (data.referenceId) refId = data.referenceId;
+        }
+      } catch {
+        // Ignore backend error if offline; FormSubmit will still deliver email
+      }
+
+      // 2. Send email directly via FormSubmit
+      const mailRes = await fetch('https://formsubmit.co', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `MAJAWA Enquiry (${refId}): ${form.subject}`,
+          _template: 'table',
+          'Reference ID': refId,
+          'Full Name': form.fullName,
+          'Email Address': form.email,
+          'Mobile Number': form.mobile || 'Not provided',
+          Subject: form.subject,
+          Message: form.message,
+        }),
       });
-      const data = (await res.json()) as { referenceId?: string; error?: string };
-      if (!res.ok) {
-        setErrorMsg(data.error || 'Unable to submit enquiry.');
+
+      if (!mailRes.ok) {
+        setErrorMsg('Unable to send enquiry email right now. Please try again.');
       } else {
-        setReceiptId(data.referenceId || 'MAJ-CON');
+        setReceiptId(refId);
         setForm({ fullName: '', email: '', mobile: '', subject: '', message: '', websiteUrl: '' });
       }
     } catch {
@@ -43,6 +74,7 @@ export function ContactPage({ lang }: ContactPageProps) {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="py-12 lg:py-16">
