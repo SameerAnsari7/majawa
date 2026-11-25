@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif-display: "Cormorant Garamond", "Noto Serif Devanagari", Georgia, serif;
+    --font-sans-body: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    font-family: var(--font-sans-body);
+    scroll-behavior: smooth;
+    background-color: #FFFFFF;
+    color: #0F172A;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+.font-editorial {
+  font-family: var(--font-serif-display);
+}
+
+.font-sans-ui {
+  font-family: var(--font-sans-body);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.text-balance {
+  text-wrap: balance;
+}

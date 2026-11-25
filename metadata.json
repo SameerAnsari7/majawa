@@ -1,0 +1,6 @@
+{
+  "name": "MAJAWA — Maharashtra Junior Advocates Welfare Association",
+  "description": "Official bilingual (English & Marathi) platform for Maharashtra Junior Advocates Welfare Association (MAJAWA) — proposed association for junior advocates' dignity, welfare, training, and confidential grievance support in Bhiwandi, Kalyan, Thane, and across Maharashtra.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
